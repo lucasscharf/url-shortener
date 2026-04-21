@@ -2,7 +2,7 @@ Simple url shortener to study Rust.
 Next steps:
 
 * **Create simple shortner without validations and using counter as keys**
-* Create a variant using Hash to keys
+* **Create a variant using Hash to keys**
 * Add a simple cli-menu
 * Do batch operations with files
 * Create configurations to allow different strategies
