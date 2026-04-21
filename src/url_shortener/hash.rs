@@ -1,15 +1,18 @@
-use super::{UrlShortener};
-use std::{collections::HashMap};
+use super::UrlShortener;
+use hex;
+use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 
 #[derive(Debug, Default)]
-pub struct CounterShortener {
-    urls: HashMap<String, String>
+pub struct HashShortener {
+    urls: HashMap<String, String>,
 }
 
-impl UrlShortener for CounterShortener {
+impl UrlShortener for HashShortener {
     fn shorten(&mut self, url: &str) -> bool {
-        let size = self.urls.len().to_string();
-        self.urls.insert(size, String::from(url));
+        let digest = Sha256::digest(url.as_bytes());
+        let key: String = hex::encode(digest);
+        self.urls.insert(key, String::from(url));
         return true;
     }
 
@@ -31,8 +34,8 @@ impl UrlShortener for CounterShortener {
 mod tests {
     use super::*;
 
-    fn novo() -> CounterShortener {
-        return CounterShortener::default();
+    fn novo() -> HashShortener {
+        return HashShortener::default();
     }
 
     #[test]
@@ -48,17 +51,29 @@ mod tests {
         s.shorten("https://b.com");
         s.shorten("https://c.com");
 
-        assert_eq!(s.get("0"), Some(&String::from("https://a.com")));
-        assert_eq!(s.get("1"), Some(&String::from("https://b.com")));
-        assert_eq!(s.get("2"), Some(&String::from("https://c.com")));
+        assert_eq!(
+            s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
+            Some(&String::from("https://a.com"))
+        );
+        assert_eq!(
+            s.get("d6fd2a8e03cac6d7ccc7ad18558a46caecf3228bdde5252ac586e9e9661fd379"),
+            Some(&String::from("https://b.com"))
+        );
+        assert_eq!(
+            s.get("d149ea8c04719973fb30a10529772d99aab483bd1f6368521bf2c42dfac33c77"),
+            Some(&String::from("https://c.com"))
+        );
     }
 
     #[test]
     fn get_retorna_none_para_chave_inexistente() {
         let mut s = novo();
-        assert_eq!(s.get("0"), None);
+        assert_eq!(
+            s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
+            None
+        );
 
-        s.shorten("https://exemplo.com");
+        s.shorten("https://a.com");
         assert_eq!(s.get("99"), None);
     }
 
@@ -84,14 +99,20 @@ mod tests {
     }
 
     #[test]
-    fn urls_duplicadas_recebem_chaves_diferentes() {
+    fn urls_duplicadas_recebem_chaves_iguais() {
         let mut s = novo();
         s.shorten("https://a.com");
         s.shorten("https://a.com");
 
         let mesma = String::from("https://a.com");
-        assert_eq!(s.get("0"), Some(&mesma));
-        assert_eq!(s.get("1"), Some(&mesma));
-        assert_eq!(s.list_all().len(), 2);
+        assert_eq!(
+            s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
+            Some(&mesma)
+        );
+        assert_eq!(
+            s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
+            Some(&mesma)
+        );
+        assert_eq!(s.list_all().len(), 1);
     }
 }

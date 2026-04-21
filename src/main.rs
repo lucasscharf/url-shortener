@@ -1,12 +1,19 @@
 mod url_shortener;
 use url_shortener::counter::CounterShortener;
-use url_shortener::UrlShortner;
+use url_shortener::hash::HashShortener;
+use url_shortener::UrlShortener;
 
 fn main() {
     println!("Hello, world!");
 
-    let mut shortener = CounterShortener::default();
-    shortener.shorten("URL");
+    let mut counter = CounterShortener::default();
+    counter.shorten("URL");
+    println!("{counter:?}");
 
-    println!("{shortener:?}");
+    let mut hasher = HashShortener::default();
+    hasher.shorten("https://a.com");
+    hasher.shorten("https://b.com");
+    hasher.shorten("https://c.com");
+
+    println!("{hasher:?}");
 }
