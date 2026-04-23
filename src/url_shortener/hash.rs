@@ -20,13 +20,22 @@ impl UrlShortener for HashShortener {
         return self.urls.get(key);
     }
 
-    fn list_all(&mut self) -> Vec<&String> {
+    fn list_values(&mut self) -> Vec<&String> {
         let mut all_urls: Vec<&String> = Vec::new();
         for url in self.urls.iter() {
             all_urls.push(url.1);
         }
 
         return all_urls;
+    }
+
+    fn list_keys(&mut self) -> Vec<&String> {
+        let mut all_keys: Vec<&String> = Vec::new();
+        for url in self.urls.iter() {
+            all_keys.push(url.0);
+        }
+
+        return all_keys;
     }
 }
 
@@ -80,7 +89,7 @@ mod tests {
     #[test]
     fn list_all_vazia_quando_nada_inserido() {
         let mut s = novo();
-        assert!(s.list_all().is_empty());
+        assert!(s.list_values().is_empty());
     }
 
     #[test]
@@ -89,7 +98,7 @@ mod tests {
         s.shorten("https://a.com");
         s.shorten("https://b.com");
 
-        let todas = s.list_all();
+        let todas = s.list_values();
         let a = String::from("https://a.com");
         let b = String::from("https://b.com");
 
@@ -113,6 +122,6 @@ mod tests {
             s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
             Some(&mesma)
         );
-        assert_eq!(s.list_all().len(), 1);
+        assert_eq!(s.list_values().len(), 1);
     }
 }

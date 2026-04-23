@@ -17,13 +17,22 @@ impl UrlShortener for CounterShortener {
         return self.urls.get(key);
     }
 
-    fn list_all(&mut self) -> Vec<&String> {
+    fn list_values(&mut self) -> Vec<&String> {
         let mut all_urls: Vec<&String> = Vec::new();
         for url in self.urls.iter() {
             all_urls.push(url.1);
         }
 
         return all_urls;
+    }
+    
+    fn list_keys(&mut self) -> Vec<&String> {
+        let mut all_keys: Vec<&String> = Vec::new();
+        for url in self.urls.iter() {
+            all_keys.push(url.0);
+        }
+
+        return all_keys;
     }
 }
 
@@ -65,7 +74,7 @@ mod tests {
     #[test]
     fn list_all_vazia_quando_nada_inserido() {
         let mut s = novo();
-        assert!(s.list_all().is_empty());
+        assert!(s.list_values().is_empty());
     }
 
     #[test]
@@ -74,7 +83,7 @@ mod tests {
         s.shorten("https://a.com");
         s.shorten("https://b.com");
 
-        let todas = s.list_all();
+        let todas = s.list_values();
         let a = String::from("https://a.com");
         let b = String::from("https://b.com");
 
@@ -92,6 +101,6 @@ mod tests {
         let mesma = String::from("https://a.com");
         assert_eq!(s.get("0"), Some(&mesma));
         assert_eq!(s.get("1"), Some(&mesma));
-        assert_eq!(s.list_all().len(), 2);
+        assert_eq!(s.list_values().len(), 2);
     }
 }

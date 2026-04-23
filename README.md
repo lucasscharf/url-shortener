@@ -3,9 +3,9 @@ Next steps:
 
 * **Create simple shortner without validations and using counter as keys**
 * **Create a variant using Hash to keys**
-* Add a simple cli-menu
-* Do batch operations with files
+* **Add a simple cli-menu**
 * Create configurations to allow different strategies
+* Do batch operations with files
 * Add capabillity to store and retrieve into in files
 * Add capabillity to store and retrieve into into SQLite
 * Add constant backups with threads into a file/SQLite
