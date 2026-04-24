@@ -16,6 +16,14 @@ cargo run
 cargo test
 ```
 
+## Configuration
+
+The application reads a `config.toml` file in the project root at startup. The following possibilities for configurations are:
+
+```toml
+shortenen_algorithm = "hash"    # or "counter"
+```
+
 ## Architecture
 
 The shortening logic is exposed through a single trait:
@@ -40,7 +48,7 @@ pub trait UrlShortener {
 * **Create a simple shortener without validations and using counter as keys**
 * **Create a variant using hash for keys**
 * **Add a simple CLI menu**
-* Create configurations to allow different strategies
+* **Create configurations to allow different strategies**
 * Do batch operations with files
 * Add capability to store and retrieve from files
 * Add capability to store and retrieve from SQLite

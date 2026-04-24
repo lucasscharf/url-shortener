@@ -1,12 +1,25 @@
 mod url_shortener;
+use config_file::FromConfigFile;
 use inquire::{InquireError, Select, Text};
+use serde::Deserialize;
 use url_shortener::UrlShortener;
 use url_shortener::counter::CounterShortener;
 use url_shortener::hash::HashShortener;
 
+#[derive(Deserialize, Debug)]
+struct Config {
+    shortenen_algorithm: String,
+}
+
 fn main() {
-    let mut counter = CounterShortener::default();
-    let mut hasher = HashShortener::default();
+    let config = Config::from_config_file("./config.toml").unwrap();
+    let mut shortener: Box<dyn UrlShortener>;
+
+    if "counter".eq_ignore_ascii_case(&config.shortenen_algorithm) {
+      shortener = Box::new(CounterShortener::default());
+    } else {
+      shortener = Box::new(HashShortener::default());
+    }
 
     println!(
         "===================================================================================="
@@ -15,8 +28,7 @@ fn main() {
     loop {
         let options: Vec<&str> = vec!["Add", "Get", "List", "List Keys", "Exit"];
 
-        let ans: Result<&str, InquireError> =
-            Select::new("Your command?", options).prompt();
+        let ans: Result<&str, InquireError> = Select::new("Your command?", options).prompt();
         let option;
         match ans {
             Ok(choice) => {
@@ -30,8 +42,7 @@ fn main() {
                 let name = Text::new("Insert the URL to shorten").prompt();
                 match name {
                     Ok(name) => {
-                        hasher.shorten(name.as_str());
-                        counter.shorten(name.as_str());
+                        shortener.shorten(name.as_str());
                     }
                     Err(_) => {
                         //Do nothing
@@ -49,29 +60,22 @@ fn main() {
                         break;
                     }
                 }
-                let mut value = counter.get(key.as_str());
+                let value = shortener.get(key.as_str());
                 if value.is_none() {
-                    value = hasher.get(key.as_str());
-                }
-                if value.is_none() {
-                  println!("Chave não existente");
-                  continue;
+                    println!("Chave não existente");
+                    continue;
                 }
                 println!("{}", value.unwrap());
             }
             "List" => {
-                println!("{:?}", counter.list_values());
-                println!("{:?}", hasher.list_values());
+                println!("{:?}", shortener.list_values());
             }
             "List Keys" => {
-                println!("{:?}", counter.list_keys());
-                println!("{:?}", hasher.list_keys());
+                println!("{:?}", shortener.list_keys());
             }
             "Exit" => break,
             _ => unreachable!(),
         }
     }
 
-    println!("{hasher:?}");
-    println!("{counter:?}");
 }
