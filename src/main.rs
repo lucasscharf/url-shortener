@@ -2,6 +2,8 @@ mod url_shortener;
 use config_file::FromConfigFile;
 use inquire::{InquireError, Select, Text};
 use serde::Deserialize;
+use strum::IntoEnumIterator;
+use strum_macros::{Display, EnumIter, EnumString};
 use url_shortener::UrlShortener;
 use url_shortener::counter::CounterShortener;
 use url_shortener::hash::HashShortener;
@@ -9,36 +11,45 @@ use url_shortener::hash::HashShortener;
 #[derive(Deserialize, Debug)]
 struct Config {
     shortenen_algorithm: String,
+    mode: Mode,
 }
 
-fn main() {
-    let config = Config::from_config_file("./config.toml").unwrap();
-    let mut shortener: Box<dyn UrlShortener>;
+#[derive(Deserialize, Debug, PartialEq)]
+enum Mode {
+    Interactive,
+    File,
+}
 
-    if "counter".eq_ignore_ascii_case(&config.shortenen_algorithm) {
-      shortener = Box::new(CounterShortener::default());
-    } else {
-      shortener = Box::new(HashShortener::default());
-    }
+#[derive(Debug, PartialEq, EnumString, Display, EnumIter, Clone)]
+enum Operations {
+    Add,
+    Get,
+    List,
+    #[strum(to_string = "List Keys")]
+    ListKeys,
+    Exit,
+}
 
+fn interactive(mut shortener: Box<dyn UrlShortener>) {
     println!(
         "===================================================================================="
     );
 
     loop {
-        let options: Vec<&str> = vec!["Add", "Get", "List", "List Keys", "Exit"];
+        let options: Vec<Operations> = Operations::iter() //
+            .collect();
 
-        let ans: Result<&str, InquireError> = Select::new("Your command?", options).prompt();
+        let ans: Result<Operations, InquireError> = Select::new("Your command?", options).prompt();
         let option;
         match ans {
             Ok(choice) => {
                 option = choice;
             }
-            Err(_) => option = "Exit",
+            Err(_) => option = Operations::Exit,
         }
 
         match option {
-            "Add" => {
+            Operations::Add => {
                 let name = Text::new("Insert the URL to shorten").prompt();
                 match name {
                     Ok(name) => {
@@ -49,7 +60,7 @@ fn main() {
                     }
                 }
             }
-            "Get" => {
+            Operations::Get => {
                 let name = Text::new("Insert the key to retrieve").prompt();
                 let key: String;
                 match name {
@@ -67,15 +78,29 @@ fn main() {
                 }
                 println!("{}", value.unwrap());
             }
-            "List" => {
+            Operations::List => {
                 println!("{:?}", shortener.list_values());
             }
-            "List Keys" => {
+            Operations::ListKeys => {
                 println!("{:?}", shortener.list_keys());
             }
-            "Exit" => break,
-            _ => unreachable!(),
+            Operations::Exit => break,
         }
     }
+}
 
+fn main() {
+    let config = Config::from_config_file("./config.toml").unwrap();
+    let shortener: Box<dyn UrlShortener>;
+
+    if "counter".eq_ignore_ascii_case(&config.shortenen_algorithm) {
+        shortener = Box::new(CounterShortener::default());
+    } else {
+        shortener = Box::new(HashShortener::default());
+    }
+
+    if config.mode == Mode::Interactive {
+        interactive(shortener);
+    } else {
+    }
 }
