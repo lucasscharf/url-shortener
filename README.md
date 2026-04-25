@@ -48,11 +48,17 @@ Also, I'm starting to have the feeling that the code is having some duplications
 
 So, I will do what any experient dev would do in this kind of situation. I will make me a sandwitch.
 
+The life is way better after a sandwitch. After some tought, since this is a pet project to learn Rust, I've decided to try using closures to implement the database approach. If it works well, then I will extend to other approaches.
+
 ## Dependencies
 
 - [`inquire`](https://crates.io/crates/inquire) — interactive CLI prompts.
 - [`sha2`](https://crates.io/crates/sha2) — SHA-256 implementation for the hash strategy.
 - [`hex`](https://crates.io/crates/hex) — hex encoding of the digest.
+- [`config-file`](https://crates.io/crates/config-file) — load `config.toml` into a typed struct at startup.
+- [`serde`](https://crates.io/crates/serde) — derive-based deserialization used by the config and CSV records.
+- [`csv`](https://crates.io/crates/csv) — read batch operations from a CSV file.
+- [`strum`](https://crates.io/crates/strum) / [`strum_macros`](https://crates.io/crates/strum_macros) — derives for iterating and displaying the `Operations` enum used in the menu.
 
 ## Next steps
 
