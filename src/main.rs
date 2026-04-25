@@ -47,10 +47,10 @@ fn file_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
 
         match record.operation {
             Operations::Shorten => {
-              shortener.shorten(record.url.as_str());
+                shortener.shorten(record.url.as_str());
             }
             Operations::Retrieve => {
-              let value = shortener.get(record.url.as_str());
+                let value = shortener.get(record.url.as_str());
                 if value.is_none() {
                     println!("Chave não existente");
                     continue;
@@ -58,13 +58,13 @@ fn file_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
                 println!("{}", value.unwrap());
             }
             Operations::List => {
-              println!("{:?}", shortener.list_values());
+                println!("{:?}", shortener.list_values());
             }
             Operations::ListKeys => {
-              println!("{:?}", shortener.list_keys());
+                println!("{:?}", shortener.list_keys());
             }
             Operations::Exit => {
-              break;
+                break;
             }
         }
     }
