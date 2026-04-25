@@ -22,8 +22,8 @@ The application reads a `config.toml` file in the project root at startup. The f
 
 ```toml
 shortenen_algorithm="counter" #options hash and counter
-mode="File" #options File and Interactive
-file_path="./operations.csv"
+mode="Batch" #options Batch and Interactive
+batch_file_path="./operations.csv"
 ```
 
 ## Architecture
@@ -38,6 +38,15 @@ pub trait UrlShortener {
     fn list_keys(&mut self) -> Vec<&String>;
 }
 ```
+
+During the process of writing the capabillity to store/retrieve from database, I've found myself in an interesting position.
+
+Should I create variants of my "objects" that operate also in database having a database_counter?
+Should I create a stored type in the structs so each variant of my shorteners would be able to deal with the database?
+Should I make the database be something transparent to the shortener only initializing it before hand and persist data after each operation?
+Also, I'm starting to have the feeling that the code is having some duplications. And any decision I made on this, I will have to repeat for both Batch and Interactive mode.
+
+So, I will do what any experient dev would do in this kind of situation. I will make me a sandwitch.
 
 ## Dependencies
 

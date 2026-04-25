@@ -1,3 +1,3 @@
 shortenen_algorithm="counter" #options hash and counter
-mode="File" #options File and Interactive
-file_path="./operations.csv"
+mode="Batch" #options Batch and Interactive
+batch_file_path="./operations.csv"

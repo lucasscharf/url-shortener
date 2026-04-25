@@ -13,13 +13,13 @@ use url_shortener::hash::HashShortener;
 struct Config {
     shortenen_algorithm: String,
     mode: Mode,
-    file_path: String,
+    batch_file_path: String,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
 enum Mode {
     Interactive,
-    File,
+    Batch,
 }
 
 #[derive(Deserialize, Debug)]
@@ -38,9 +38,9 @@ enum Operations {
     Exit,
 }
 
-fn file_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
-    let file_path = config.file_path;
-    let mut rdr = Reader::from_path(file_path).unwrap();
+fn batch_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
+    let batch_file_path = config.batch_file_path;
+    let mut rdr = Reader::from_path(batch_file_path).unwrap();
 
     for result in rdr.deserialize::<Operation>() {
         let record = result.unwrap();
@@ -138,6 +138,6 @@ fn main() {
     if config.mode == Mode::Interactive {
         interactive_mode(shortener);
     } else {
-        file_mode(shortener, config);
+        batch_mode(shortener, config);
     }
 }
