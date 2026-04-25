@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 config-file = "0.2.3"
+csv = "1.4.0"
 hex = "0.4.3"
 inquire = "0.9.4"
 serde = { version = "1.0.228", features = ["derive"] }

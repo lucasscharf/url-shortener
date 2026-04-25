@@ -21,7 +21,9 @@ cargo test
 The application reads a `config.toml` file in the project root at startup. The following possibilities for configurations are:
 
 ```toml
-shortenen_algorithm = "hash"    # or "counter"
+shortenen_algorithm="counter" #options hash and counter
+mode="File" #options File and Interactive
+file_path="./operations.csv"
 ```
 
 ## Architecture
@@ -49,11 +51,12 @@ pub trait UrlShortener {
 * **Create a variant using hash for keys**
 * **Add a simple CLI menu**
 * **Create configurations to allow different strategies**
-* Do batch operations with files
-* Add capability to store and retrieve from files
+* **Do batch operations with files**
 * Add capability to store and retrieve from SQLite
-* Add continuous backups with threads into a file/SQLite
+* Add continuous backups with threads into a SQLite
 * Add capability to remove a key
 * Add capability to do operations over REST
 * Create a Next.js screen
 * Create a distributed variant using a consensus algorithm like Paxos or Raft
+* Create panick handling
+* Create a complete Readme.md

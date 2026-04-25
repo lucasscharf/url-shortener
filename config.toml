@@ -1,2 +1,3 @@
-shortenen_algorithm="hash"
-mode="Interactive"
+shortenen_algorithm="counter" #options hash and counter
+mode="File" #options File and Interactive
+file_path="./operations.csv"
