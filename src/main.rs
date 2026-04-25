@@ -71,10 +71,6 @@ fn file_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
 }
 
 fn interactive_mode(mut shortener: Box<dyn UrlShortener>) {
-    println!(
-        "===================================================================================="
-    );
-
     loop {
         let options: Vec<Operations> = Operations::iter() //
             .collect();
