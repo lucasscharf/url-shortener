@@ -3,17 +3,23 @@ use hex;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct HashShortener {
     urls: HashMap<String, String>,
 }
 
+impl HashShortener {
+    pub fn new(urls: HashMap<String, String>) -> Self {
+        Self { urls: urls }
+    }
+}
+
 impl UrlShortener for HashShortener {
-    fn shorten(&mut self, url: &str) -> bool {
+    fn shorten(&mut self, url: &str) -> String {
         let digest = Sha256::digest(url.as_bytes());
         let key: String = hex::encode(digest);
-        self.urls.insert(key, String::from(url));
-        return true;
+        self.urls.insert(key.clone(), String::from(url));
+        return key;
     }
 
     fn get(&mut self, key: &str) -> Option<&String> {
@@ -44,13 +50,16 @@ mod tests {
     use super::*;
 
     fn new() -> HashShortener {
-        return HashShortener::default();
+        return HashShortener::new(HashMap::new());
     }
 
     #[test]
     fn shorten_returns_true() {
         let mut s = new();
-        assert!(s.shorten("https://a.com"));
+        assert_eq!(
+            "4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5",
+            s.shorten("https://a.com")
+        );
     }
 
     #[test]

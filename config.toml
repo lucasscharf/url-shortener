@@ -1,3 +1,4 @@
 shortenen_algorithm="counter" #options hash and counter
 mode="Batch" #options Batch and Interactive
 batch_file_path="./operations.csv"
+persistent=true #options true and false

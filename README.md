@@ -67,10 +67,12 @@ The life is way better after a sandwitch. After some tought, since this is a pet
 * **Add a simple CLI menu**
 * **Create configurations to allow different strategies**
 * **Do batch operations with files**
-* Add capability to store and retrieve from SQLite
+* **Add capability to store and retrieve from SQLite**
 * Add continuous backups with threads into a SQLite
 * Add capability to remove a key
 * Add capability to do operations over REST
+* Use rusqlite_serde
+* Clean up everything removing tons of ifs and make the code more rust-like
 * Create a Next.js screen
 * Create a distributed variant using a consensus algorithm like Paxos or Raft
 * Create panick handling

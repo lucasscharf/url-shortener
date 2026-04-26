@@ -1,16 +1,21 @@
-use super::{UrlShortener};
-use std::{collections::HashMap};
+use super::UrlShortener;
+use std::collections::HashMap;
 
 #[derive(Debug, Default)]
 pub struct CounterShortener {
-    urls: HashMap<String, String>
+    urls: HashMap<String, String>,
+}
+impl CounterShortener {
+    pub fn new(urls: HashMap<String, String>) -> Self {
+        Self { urls: urls }
+    }
 }
 
 impl UrlShortener for CounterShortener {
-    fn shorten(&mut self, url: &str) -> bool {
+    fn shorten(&mut self, url: &str) -> String {
         let size = self.urls.len().to_string();
-        self.urls.insert(size, String::from(url));
-        return true;
+        self.urls.insert(size.clone(), String::from(url));
+        return size;
     }
 
     fn get(&mut self, key: &str) -> Option<&String> {
@@ -25,7 +30,7 @@ impl UrlShortener for CounterShortener {
 
         return all_urls;
     }
-    
+
     fn list_keys(&mut self) -> Vec<&String> {
         let mut all_keys: Vec<&String> = Vec::new();
         for url in self.urls.iter() {
@@ -41,13 +46,13 @@ mod tests {
     use super::*;
 
     fn new() -> CounterShortener {
-        return CounterShortener::default();
+        return CounterShortener::new(HashMap::new());
     }
 
     #[test]
     fn shorten_return_true() {
         let mut s = new();
-        assert!(s.shorten("https://a.com"));
+        assert_eq!("1", s.shorten("https://a.com"));
     }
 
     #[test]

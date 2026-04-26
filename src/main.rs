@@ -1,7 +1,13 @@
+mod database;
 mod url_shortener;
+
+use std::collections::HashMap;
+
 use config_file::FromConfigFile;
 use csv::Reader;
-use inquire::{InquireError, Select, Text};
+use database::Database;
+use inquire::{Select, Text};
+use rusqlite::Connection;
 use serde::Deserialize;
 use strum::IntoEnumIterator;
 use strum_macros::{Display, EnumIter, EnumString};
@@ -14,6 +20,7 @@ struct Config {
     shortenen_algorithm: String,
     mode: Mode,
     batch_file_path: String,
+    persistent: bool,
 }
 
 #[derive(Deserialize, Debug, PartialEq)]
@@ -38,7 +45,7 @@ enum Operations {
     Exit,
 }
 
-fn batch_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
+fn batch_mode(mut shortener: Box<dyn UrlShortener>, config: Config, database: Option<Database>) {
     let batch_file_path = config.batch_file_path;
     let mut rdr = Reader::from_path(batch_file_path).unwrap();
 
@@ -47,7 +54,10 @@ fn batch_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
 
         match record.operation {
             Operations::Shorten => {
-                shortener.shorten(record.url.as_str());
+                let key = shortener.shorten(record.url.as_str());
+                if let Some(db) = &database {
+                    let _ = db.insert((key, record.url));
+                }
             }
             Operations::Retrieve => {
                 let value = shortener.get(record.url.as_str());
@@ -70,12 +80,12 @@ fn batch_mode(mut shortener: Box<dyn UrlShortener>, config: Config) {
     }
 }
 
-fn interactive_mode(mut shortener: Box<dyn UrlShortener>) {
+fn interactive_mode(mut shortener: Box<dyn UrlShortener>, database: Option<Database>) {
     loop {
         let options: Vec<Operations> = Operations::iter() //
             .collect();
 
-        let ans: Result<Operations, InquireError> = Select::new("Your command?", options).prompt();
+        let ans = Select::new("Your command?", options).prompt();
         let option;
         match ans {
             Ok(choice) => {
@@ -89,7 +99,10 @@ fn interactive_mode(mut shortener: Box<dyn UrlShortener>) {
                 let name = Text::new("Insert the URL to shorten").prompt();
                 match name {
                     Ok(name) => {
-                        shortener.shorten(name.as_str());
+                        let key = shortener.shorten(name.as_str());
+                        if let Some(db) = &database {
+                            let _ = db.insert((key, name));
+                        }
                     }
                     Err(_) => {
                         //Do nothing
@@ -129,15 +142,31 @@ fn main() {
     let config = Config::from_config_file("./config.toml").unwrap();
     let shortener: Box<dyn UrlShortener>;
 
-    if "counter".eq_ignore_ascii_case(&config.shortenen_algorithm) {
-        shortener = Box::new(CounterShortener::default());
+    let initial: HashMap<String, String>;
+    let mut database: Option<Database> = None;
+
+    if config.persistent {
+        let conn = Connection::open("sqls.db").unwrap();
+        let mut temp: HashMap<String, String> = HashMap::new();
+        let db = Database::new(conn);
+        db.select_all().unwrap().into_iter().for_each(|f| {
+            temp.insert(f.0, f.1);
+        });
+        database = Option::Some(db);
+        initial = temp;
     } else {
-        shortener = Box::new(HashShortener::default());
+        initial = HashMap::new();
+    }
+
+    if "counter".eq_ignore_ascii_case(&config.shortenen_algorithm) {
+        shortener = Box::new(CounterShortener::new(initial));
+    } else {
+        shortener = Box::new(HashShortener::new(initial));
     }
 
     if config.mode == Mode::Interactive {
-        interactive_mode(shortener);
+        interactive_mode(shortener, database);
     } else {
-        batch_mode(shortener, config);
+        batch_mode(shortener, config, database);
     }
 }
