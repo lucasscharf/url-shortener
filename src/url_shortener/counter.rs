@@ -40,19 +40,19 @@ impl UrlShortener for CounterShortener {
 mod tests {
     use super::*;
 
-    fn novo() -> CounterShortener {
+    fn new() -> CounterShortener {
         return CounterShortener::default();
     }
 
     #[test]
-    fn shorten_retorna_true() {
-        let mut s = novo();
+    fn shorten_return_true() {
+        let mut s = new();
         assert!(s.shorten("https://a.com"));
     }
 
     #[test]
-    fn shorten_usa_indice_sequencial_como_chave() {
-        let mut s = novo();
+    fn shorten_use_sequential_index_as_key() {
+        let mut s = new();
         s.shorten("https://a.com");
         s.shorten("https://b.com");
         s.shorten("https://c.com");
@@ -63,8 +63,8 @@ mod tests {
     }
 
     #[test]
-    fn get_retorna_none_para_chave_inexistente() {
-        let mut s = novo();
+    fn get_returns_none_to_unexistent_key() {
+        let mut s = new();
         assert_eq!(s.get("0"), None);
 
         s.shorten("https://exemplo.com");
@@ -72,14 +72,14 @@ mod tests {
     }
 
     #[test]
-    fn list_all_vazia_quando_nada_inserido() {
-        let mut s = novo();
+    fn list_all_return_empty_when_there_is_no_elements() {
+        let mut s = new();
         assert!(s.list_values().is_empty());
     }
 
     #[test]
-    fn list_all_contem_todas_as_urls_inseridas() {
-        let mut s = novo();
+    fn list_all_contain_all_keys() {
+        let mut s = new();
         s.shorten("https://a.com");
         s.shorten("https://b.com");
 
@@ -93,8 +93,8 @@ mod tests {
     }
 
     #[test]
-    fn urls_duplicadas_recebem_chaves_diferentes() {
-        let mut s = novo();
+    fn shorten_same_vale_twice_creates_differets_keys() {
+        let mut s = new();
         s.shorten("https://a.com");
         s.shorten("https://a.com");
 

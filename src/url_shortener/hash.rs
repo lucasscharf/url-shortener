@@ -43,19 +43,19 @@ impl UrlShortener for HashShortener {
 mod tests {
     use super::*;
 
-    fn novo() -> HashShortener {
+    fn new() -> HashShortener {
         return HashShortener::default();
     }
 
     #[test]
-    fn shorten_retorna_true() {
-        let mut s = novo();
+    fn shorten_returns_true() {
+        let mut s = new();
         assert!(s.shorten("https://a.com"));
     }
 
     #[test]
-    fn shorten_usa_indice_sequencial_como_chave() {
-        let mut s = novo();
+    fn shorten_uses_hash_as_index() {
+        let mut s = new();
         s.shorten("https://a.com");
         s.shorten("https://b.com");
         s.shorten("https://c.com");
@@ -75,8 +75,8 @@ mod tests {
     }
 
     #[test]
-    fn get_retorna_none_para_chave_inexistente() {
-        let mut s = novo();
+    fn get_return_none_to_unexistent_key() {
+        let mut s = new();
         assert_eq!(
             s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
             None
@@ -87,14 +87,14 @@ mod tests {
     }
 
     #[test]
-    fn list_all_vazia_quando_nada_inserido() {
-        let mut s = novo();
+    fn list_all_returns_empty_when_there_is_no_element() {
+        let mut s = new();
         assert!(s.list_values().is_empty());
     }
 
     #[test]
-    fn list_all_contem_todas_as_urls_inseridas() {
-        let mut s = novo();
+    fn list_all_have_all_urls() {
+        let mut s = new();
         s.shorten("https://a.com");
         s.shorten("https://b.com");
 
@@ -108,19 +108,19 @@ mod tests {
     }
 
     #[test]
-    fn urls_duplicadas_recebem_chaves_iguais() {
-        let mut s = novo();
+    fn shorten_same_url_twice_receive_same_key() {
+        let mut s = new();
         s.shorten("https://a.com");
         s.shorten("https://a.com");
 
-        let mesma = String::from("https://a.com");
+        let same = String::from("https://a.com");
         assert_eq!(
             s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
-            Some(&mesma)
+            Some(&same)
         );
         assert_eq!(
             s.get("4b59642f5a13d013f9a0ae0c70d815c320d846f6333ab46323c594603baff5d5"),
-            Some(&mesma)
+            Some(&same)
         );
         assert_eq!(s.list_values().len(), 1);
     }
